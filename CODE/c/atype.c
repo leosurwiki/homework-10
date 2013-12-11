@@ -34,7 +34,7 @@ void print_situation()
         {
             for (j=0;j<m;j++)
             {
-                fprintf(fout,"%d ",chosen[i*m+j]==-1?0:1);
+                fprintf(fout,"%d ",chosen[i*m+j]);
                 tmpchosen[i*m+j]=chosen[i*m+j];
             }
             fprintf(fout,"\n");
@@ -62,7 +62,7 @@ void print_situation()
             {
                 for (j=0;j<m;j++)
                 {
-                    fprintf(fout,"%d ",chosen[i*m+j]);
+					if (chosen[father2g[fatherfind(i,j)]])fprintf(fout,"1 "); else fprintf(fout,"0 ");
                     tmpchosen[i*m+j]=chosen[i*m+j];
                 }
                 fprintf(fout,"\n");
@@ -290,7 +290,11 @@ void SAA(int v,float T,float r,float Tmin)
         if (visited[ranS]||!available[ranS]) {return ;}
         SMR=0;
         tmp=estimate(maxS);
-        if (sum+tmp>totalmax) {totalmax=sum+tmp;pseudoexpand(maxS);}
+        if (sum+tmp>totalmax)
+		{
+			totalmax=sum+tmp;pseudoexpand(maxS);
+			print_situation();
+		}
         if (tmp>0){SMR=1;}
         else
         {
@@ -298,8 +302,12 @@ void SAA(int v,float T,float r,float Tmin)
         }
         T*=r;
         tmp=SMR==1?estimate(maxS)-estimate(ranS):estimate(ranS);
-
-        if (sum+estimate(ranS)>totalmax) {totalmax=sum+estimate(ranS);pseudoexpand(ranS);}
+        if (sum+estimate(ranS)>totalmax)
+		{
+			totalmax=sum+estimate(ranS);
+			pseudoexpand(ranS);
+			print_situation();
+		}
         if (exp(tmp/T)>(rand()%10000)/10000.0){SMR=2;}
         T*=r;
         switch(SMR)
@@ -308,9 +316,13 @@ void SAA(int v,float T,float r,float Tmin)
             case 2:sum+=expand(ranS);break;
         }
         if (T<Tmin){break;}
-        if (sum>totalmax) {totalmax=sum;printf("%d\n",totalmax);for (j=0;j<1024;j++){chosen[j]=visited[j];}}
+        if (sum>totalmax)
+		{
+			totalmax=sum;printf("%d\n",totalmax);
+			for (j=0;j<1024;j++){chosen[j]=visited[j];}
+			print_situation();
+		}
     }
-    print_situation();
 }
 struct link * DFS(int v)
 {
@@ -401,7 +413,7 @@ int deal(int o,int p,int c[],int vertical,int horizontal)
     }
     setgraph(vertical,horizontal);
     holysum = 0;
-    for(z=0;z<2000;z++)
+    for(z=0;z<20;z++)
     {
         for (i=0;i<num;i++)
     	{
@@ -411,11 +423,12 @@ int deal(int o,int p,int c[],int vertical,int horizontal)
     	        for (j=0;j<(num/2+1);j++)
     	        {
     	            x*=0.5;
-    	            SAA(i,x,0.7,0.0001);
+    	            SAA(i,x,0.999,0.001);
     	        }
     	    }
     	}
     	patch();
+		print_situation();
     	totalmax = 0;
     	for (i=0;i<num;i++)
     	{
@@ -431,6 +444,7 @@ int deal(int o,int p,int c[],int vertical,int horizontal)
             {
                 holychosen[i] = chosen[i];
             }
+
         }
     }
     for (i=0;i<n;i++)
@@ -448,6 +462,6 @@ int deal(int o,int p,int c[],int vertical,int horizontal)
 }
 int main()
 {
-    int a[6]={59,24,34,44,63,21},i;
-    deal(2,3,a,0,0);
+    int a[15]={1,-2,3,-4,5,-6,7,-8,9,-10,11,-12,13,-14,15},i;
+    deal(3,5,a,0,0);
 }

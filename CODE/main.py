@@ -14,6 +14,7 @@ from PyQt4.QtCore import *
 import sys
 import time
 import thread
+import random
 from Ui_main import Ui_main_GUI
 
 
@@ -69,19 +70,10 @@ class main_GUI(QDialog, Ui_main_GUI):
     def repaint(self):
         for i in range(len(self.situation[0])):
             for j in range(len(self.situation[0][0])):
-                if int(self.tmp[i*len(self.situation[0][0])+j]) == -10001:
-                    nitem = self.t[self.now].item(i,j)
-                    if nitem==None:
-                        nitem = QTableWidgetItem ('0')
-                    nitem.setBackgroundColor(QColor(0,215,0))
-                    self.t[self.now].setItem(i,j,nitem)
-        for i in range(len(self.situation[0])):
-            for j in range(len(self.situation[0][0])):
                 try:
                     nitem = self.t[self.now].item(i,j)
                     if nitem==None:
                         nitem = QTableWidgetItem ('0')
-                        self.t[self.now].setItem(i,j,nitem)
                     if self.situation[self.now_frame][i][j]=='1':
                         nitem.setBackgroundColor(QColor(255,215,0))#黄色
                         self.t[self.now].setItem(i,j,nitem)
@@ -91,15 +83,6 @@ class main_GUI(QDialog, Ui_main_GUI):
                 except:
                     print "error1"
                     print i,j,self.now_frame
-        for i in range(len(self.situation[0])):
-            for j in range(len(self.situation[0][0])):
-                if int(self.tmp[i*len(self.situation[0][0])+j]) == -10001:
-                    nitem = self.t[self.now].item(i,j)
-                    if self.situation[self.now_frame][i][j]!='1':
-                        nitem.setBackgroundColor(QColor(0,0,255))
-                    else:
-                        nitem.setBackgroundColor(QColor(0,255,0))
-                    self.t[self.now].setItem(i,j,nitem)
     def check(self):
         self.pushButton_3.setDisabled(False)
         self.pushButton_4.setDisabled(False)
@@ -166,11 +149,11 @@ class main_GUI(QDialog, Ui_main_GUI):
                     nitem = self.t[self.now].item(i,j)
                     if nitem==None:
                         nitem = QTableWidgetItem ('0')
-                    nitem.setBackgroundColor(QColor(0,215,0))
+                    nitem.setTextColor(QColor(200,111,30))
                     self.t[self.now].setItem(i,j,nitem)
         self.l[self.now].setText('ans:'+str(ans))
-        self.repaint()
-        self.check()
+        #self.repaint()
+        #self.check()
         self.l[self.now].setText('ans:'+str(ans))
         
     def __init__(self, parent = None):
@@ -203,6 +186,7 @@ class main_GUI(QDialog, Ui_main_GUI):
             return 0
         else:
             [n,m,matrix] = self.matrixinput(self)
+        print n,m
         self.solve(n,m,matrix,amorphous,horizontal,vertical)
         self.t[self.now].setCurrentCell(32,32)
         self.pushButton.setDisabled(True)
@@ -258,6 +242,11 @@ class main_GUI(QDialog, Ui_main_GUI):
                 self.t[self.now].setCurrentItem(None)
                 self.t[self.now].setItem(i,j,nitem)
             i+=1
+    def on_pushButton_8_clicked(self):
+        for i in range(6):
+            for j in range(6):
+                nitem = QTableWidgetItem(str(random.randint(-99,99)))
+                self.t[self.now].setItem(i,j,nitem)
 app = QApplication(sys.argv)  
 window = main_GUI()  
 window.show()  

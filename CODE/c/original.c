@@ -3,7 +3,7 @@
 int prex1=-1,preyy=-1,prex2=-1,prey2=-1;
 int x1,yy,x2,y2;
 FILE * fout;
-int X,Y,SUM=0,ok=0,corl;
+int X,Y,SUM=0,ok=0,corl;/*corl表示是否有参数h*/
 void print_XY()
 {
     int i,j;
@@ -44,11 +44,14 @@ void print_XY()
     }
     SUM++;
 }
+/*
+    打印当前状态
+*/
 int maxsumline(int *p,int size)
 {
     int i;
     int sum,ans,tmp=0;
-    corl = 1;
+    s = 1;
     sum=0;
     ans=-1000000;
     for(i=0;i<size;i++)
@@ -60,6 +63,9 @@ int maxsumline(int *p,int size)
     corl = 0;
     return ans;
 }
+/*
+    求一个序列的最大连续子序列
+*/
 int maxsumcycle(int *p,int size)
 {
     int i;
@@ -96,6 +102,9 @@ int maxsumcycle(int *p,int size)
         return ans;
     }
 }
+/*
+    求一个环的最大子序列
+*/
 int maxsumblock(int a[],int n,int m,int cycle,int expand)
 {
     int i,j,k,tmp,totalmax=0;
@@ -193,6 +202,9 @@ int maxsumblock(int a[],int n,int m,int cycle,int expand)
     fclose(fout);
     return totalmax;
 }
+/*
+    主程序
+*/
 int main()
 {
     int a[6]={1,-2,3,1,-2,3};

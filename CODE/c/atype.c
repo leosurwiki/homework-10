@@ -3,27 +3,66 @@
 #include <string.h>
 const int shifti[4]={1,-1,0,0};
 const int shiftj[4]={0,0,1,-1};
+/*
+    偏移量，也就是偏移到一个点上下左右四个方向的点
+*/
 int father2g[N*M];
+/*
+    把一个节点在并查集中的父节点对应为一个图节点
+*/
 struct link
 {
     int s,t;
     struct link * next;
 };
-char strs[3000][3000];
-int shifter,totalmax=-10000;
-int chosen[1024]={-1},holychosen[1024];
-int m,n,holysum;
-int a[1024],w[1024];
-int father[N][M];
+/*
+    边结构
+*/
 int value[1024];
+/*
+    图节点的权值
+*/
+int shifter,totalmax=-10000;
+/*
+    for shifter in range(4),辅助偏移量用的，totalmax即在一次SAA过程中得到的最大值
+*/
+int chosen[1024]={-1},holychosen[1024];
+/*
+    chosen:当前状态下在图上的最优选择,holychosen经过几次SAA后得到的最优解
+*/
+int m,n,holysum;
+/*
+    m,n为矩阵column数和row数
+    holysum为SAA后得到的最优解
+*/
+int a[1024];
+/*
+    a为矩阵节点
+*/
+int father[N][M];
+/*
+    点[n,m]在并查集中的父节点
+*/
 int num=0;
 struct link *g[1024];
+/*
+    图组，前向星形式
+*/
 int visited[1024]={0};
-char h[1024][1024];
-int q[1024],available[1024],topq;
+/*
+    是否访问过图节点i。
+*/
+int available[1024],topq;
+/*
+    available
+*/
 FILE * fout;
 int tmpchosen[1024];
+/*
+    与上一次的状态相比发生了改变吗？
+*/
 int step=0;
+
 void print_situation()
 {
     int i,j,yes;
@@ -71,6 +110,9 @@ void print_situation()
         }
     }
 }
+/*
+    打印当前状态下的矩阵
+*/
 int fatherfind(int x,int y)
 {
     int result;
@@ -82,6 +124,9 @@ int fatherfind(int x,int y)
     }
     return result;
 }
+/*
+    并查集寻祖
+*/
 void setgraph(int vertical,int horizontal)
 {
     int i1,j1,i,j,yes;
@@ -92,7 +137,6 @@ void setgraph(int vertical,int horizontal)
     {
         for (j=0;j<m;j++)
         {
-            h[i][j]=0;
             father2g[i*m+j]=-1;
             if (a[i*m+j]>=0)
             {
@@ -168,31 +212,9 @@ void setgraph(int vertical,int horizontal)
         }
     }
 }
-void printG()
-{
-    int i;
-    struct link * p;
-    for (i=0;i<num;i++)
-    {
-        p=g[i];
-        printf("%d:%d\n",i,value[i]);
-        while (p!=NULL)
-        {
-            printf("%d ",p->t);
-            p=p->next;
-        }
-        printf("\n");
-    }
-}
-void printS()
-{
-    int i;
-    for (i=0;i<num;i++)
-    {
-        printf("%d %d\n",i,chosen[i]);
-    }
-    printf("\n");
-}
+/*
+    缩点建图
+*/
 int estimate(int v)
 {
     int result=value[v];
@@ -205,6 +227,9 @@ int estimate(int v)
     }
     return result;
 }
+/*
+    选择该节点的估价函数
+*/
 int expand(int v)
 {
     struct link * p;
@@ -225,6 +250,9 @@ int expand(int v)
     }
     return result;
 }
+/*
+    实在行扩张
+*/
 void pseudoexpand(int v)
 {
     struct link * p;
@@ -240,8 +268,10 @@ void pseudoexpand(int v)
         if (value[p->t]>=0){chosen[p->t]=1;}
         p=p->next;
     }
-
 }
+/*
+    伪扩张
+*/
 void SAA(int v,float T,float r,float Tmin)
 {
     int i,max,maxS=0,ranS,tmp,SMR,sum,ri,j;//State
@@ -249,7 +279,7 @@ void SAA(int v,float T,float r,float Tmin)
     srand(time(0));
     sum=value[v];
     for(i=0;i<1024;i++){visited[i]=0;available[i]=0;}
-    topq=0;p=g[v];visited[v]=1;
+    p=g[v];visited[v]=1;
     while (p!=NULL)
     {
         if (!visited[p->t]){available[p->t]=1;}
@@ -324,6 +354,9 @@ void SAA(int v,float T,float r,float Tmin)
 		}
     }
 }
+/*
+    退火算法主体
+*/
 struct link * DFS(int v)
 {
     struct link * p;
@@ -364,6 +397,9 @@ struct link * DFS(int v)
     if (q->next!=NULL) return q;
     return NULL;
 }
+/*
+    图遍历
+*/
 void patch()
 {
     int i,j,sum,yes;
@@ -397,6 +433,9 @@ void patch()
         if (yes==0) {break;}
     }
 }
+/*
+    对当前状态进行贪心扩张
+*/
 int deal(int o,int p,int c[],int vertical,int horizontal)
 {
     int i,j,z;
@@ -460,6 +499,9 @@ int deal(int o,int p,int c[],int vertical,int horizontal)
     fclose(fout);
     return holysum;
 }
+/*
+    进行多次退火，得到一个最优解
+*/
 int main()
 {
     int a[15]={1,-2,3,-4,5,-6,7,-8,9,-10,11,-12,13,-14,15},i;
